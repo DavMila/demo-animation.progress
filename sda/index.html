@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="../lorem-ipsum.js"></script>
+  </head>
+  <body>
+    <style>
+      #content {
+        display: flex;
+        white-space: nowrap;
+      }
+      #scroller {
+        overflow-y: scroll;
+        align-self: center;
+        border: solid 1px black;
+        width: 80vw;
+        height: 80vh;
+        display: inline-block;
+        margin-right: 20px;
+        padding-top: 10px;
+      }
+      #meter {
+        display: flex;
+        height: 80vh;
+        width: 50px;
+        border: solid 1px black;
+        align-content: end;
+        justify-content: center;
+      }
+      #meterbar {
+        background-color: green;
+        min-height: 10px;
+        height: 10px;
+        width: 95%;
+      }
+      .textcard {
+        margin-left: 20px;
+        margin-bottom: 100px;
+        height: 20%;
+        width: 80%;
+        border: solid 1px blue;
+        position: relative;
+        white-space: initial;
+        height: auto;
+      }
+      #tandc {
+        height: 400vh;
+        width: 100%;
+      }
+      #target {
+        border: solid 5px green
+      }
+      #requiredsectionsign {
+        white-space: nowrap;
+        display: inline-block;
+      }
+      #completionsignal {
+        color: green;
+        font-weight: 10em;
+        display: none;
+      }
+    </style>
+    <div id="info">
+      <h2>Scroll to update viewing information.</h2>
+      <div id="viewInfo"></div>
+    </div>
+    <div id="content">
+      <div id="scroller">
+        <div id="tandc">
+          <div class="textcard" id="textcard1"></div>
+          <div id="requiredsectionsign">
+            <h2> This is the Required Section.</h2>
+          </div>
+          <div id="completionsignal">
+            <h2 id="completionsignaltext">(Completed!)</h2>
+          </div>
+          <div class="textcard" id="target">
+          </div>
+          <div class="textcard" id="textcard2"></div>
+          <div class="textcard" id="textcard3"></div>
+          <div class="textcard" id="textcard4"></div>
+          <div class="textcard" id="textcard5"></div>
+        </div>
+      </div>
+      <div id="meter">
+        <div id="meterbar"></div>
+      </div>
+    </div>
+    <script>
+      const scroller = document.getElementById("scroller");
+      const tandc = document.getElementById("tandc");
+      const meterbar = document.getElementById("meterbar");
+      const target = document.getElementById("target");
+      const viewInfo = document.getElementById("viewInfo");
+
+      const makeAnimation = (subject, rangeStart, rangeEnd) => {
+        const viewtimeline = new ViewTimeline(
+          {
+            subject: subject,
+            axis: 'y'
+          }
+        );
+
+        const animation = meterbar.animate(
+        [
+          { height: "0%" },
+          { height: "100%" },
+        ],
+        {
+          timeline: viewtimeline,
+          rangeStart: rangeStart,
+          rangeEnd: rangeEnd,
+          fill: "forwards"
+        });
+
+        return animation;
+      }
+
+      const animation = makeAnimation(target, "cover 0%", "contain 100%");
+
+      
+      window.onload = () => {
+        const sections = document.querySelectorAll(".textcard");
+        const completionsignal = document.getElementById("completionsignal");
+
+        const updateScrollStatus = () => {
+          const scrollStatus = document.getElementById("scrollStatus");
+          scrollStatus.innerHTML = `<h3>${scroller.scrollLeft}, ${scroller.scrollTop}</h3>`;
+        }
+
+        const updateViewInfo = () => {
+          const meterbar = document.getElementById("meterbar");
+          const progress_pct = animation.progress * 100;
+          viewInfo.innerHTML = `<h3>Required Section progress: ${ Math.round(progress_pct) }%.</h3>`;
+
+          if (progress_pct == 100) {
+            completionsignal.style.display = "inline-block";
+          }
+        };
+
+        scroller.addEventListener("scroll", updateViewInfo);
+
+        
+        initLoremIpsum();
+        for (const section of sections) {
+          fillSection(section);
+        }
+        updateViewInfo();
+      };
+    </script>
+  </body>
+</html>
