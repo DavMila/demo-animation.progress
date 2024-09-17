@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+  </head>
+  <body>
+    <style>
+      #container {
+        height: 80vh;
+        width: 80vw;
+        display: flex;
+        place-content: center center;
+        background-color: black;
+      }
+      #box {
+        background-color: yellow;
+        height: 80%;
+        width: 80%;
+        align-self: center;
+      }
+      #info {
+        display: inline-block;
+        white-space: nowrap;
+      }
+      #info div {
+        display: inline-block;
+        font-weight: bold;
+      }
+    </style>
+    <h1>Time-Driven Animation demo of animation.progress</h1>
+    <div id="ctrlbox">
+      <label for="numflashes">Select the number of flashes</label>
+      <input id="numflashes" style="min-width:100px" type="number" placeholder="1(default)-10" min="1" max="10"/>
+      <button onclick="animateBox()">Animate Box</button>
+      <div id="info">The animation's progress: <div>N/A%</div></div>
+    </div>
+    <div id="container">
+      <div id="box"></div>
+    </div>
+    <script>
+      const box = document.getElementById("box");
+      const numflashes = document.getElementById("numflashes");
+      let animation = null;
+      const defaultFlashCount = 1;
+      let flashCount = 10;
+
+      function updateInfo() {
+        const info = document.getElementById("info");
+
+        const progress_pct = Math.round(animation.progress * 100);
+        info.innerHTML = `The animation's progress: <div>${progress_pct}%<div>`;
+
+        if (animation.playState != "finished") {
+          requestAnimationFrame(updateInfo);
+        }
+      }
+
+      function animateBox() {
+        flashCount = parseInt(numflashes.value || defaultFlashCount);
+        if (animation) {
+          animation.cancel();
+        }
+
+        animation = box.animate([
+          { opacity: 1 },
+          { opacity: 0 },
+          { opacity: 1 }
+        ], {
+          duration: 1000,
+          iterations: flashCount
+        });
+
+        requestAnimationFrame(updateInfo);
+      }
+      </script>
+  </body>
+</html>
