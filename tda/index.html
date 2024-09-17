@@ -28,6 +28,7 @@
       }
     </style>
     <h1>Time-Driven Animation demo of animation.progress</h1>
+    <h2 id="fallbackinfo" style="color: blue"></h2>
     <div id="ctrlbox">
       <label for="numflashes">Select the number of flashes</label>
       <input id="numflashes" style="min-width:100px" type="number" placeholder="1(default)-10" min="1" max="10"/>
@@ -44,10 +45,24 @@
       const defaultFlashCount = 1;
       let flashCount = 10;
 
+      function progress() {
+        if (animation.progress !== undefined) {
+          return animation.progress;
+        }
+
+        let pct = animation.currentTime / animation.effect.getComputedTiming().endTime;
+
+        // Clamp to [0, 1];
+        pct = Math.min(pct, 1);
+        pct = Math.max(pct, 0);
+
+        return pct;
+      }
+
       function updateInfo() {
         const info = document.getElementById("info");
 
-        const progress_pct = Math.round(animation.progress * 100);
+        const progress_pct = Math.round(progress() * 100);
         info.innerHTML = `The animation's progress: <div>${progress_pct}%<div>`;
 
         if (animation.playState != "finished") {
@@ -71,6 +86,14 @@
         });
 
         requestAnimationFrame(updateInfo);
+      }
+
+      window.onload = () => {
+        const test = new Animation();
+
+        if (test.progress === undefined) {
+          fallbackinfo.innerText = "Note: animation.progress is not defined. Using fallback calculation."
+        }
       }
       </script>
   </body>
